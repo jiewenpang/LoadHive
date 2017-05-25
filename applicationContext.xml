@@ -1,0 +1,127 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.springframework.org/schema/util
+	http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+	
+	<!-- 
+		共分为4种：property是公共节点，EL表达式解析节点，basevalue模板节点，其余是各业务节点
+		1.property是程序本身的配置，例如日志路径等
+		2.*EL是表达式解析节点，用于解析表达式，全大写的单词是需要业务处理类去替换的
+		3.业务节点继承并可以覆盖basevalue的参数，需要指定自身业务的参数，业务节点的处理类必须指定正确，一般必须指定：
+		  name是会作为线程名打印到日志，请保持不超过7字节
+		  inputPath处理目录
+		  outputPath输出目录
+		  ...
+	-->
+	
+	<bean id="property" class="com.asiainfo.inhive.Constant">
+		<property name="propertyMap">
+			<util:map map-class="java.util.HashMap">
+				<entry key="LOG_PATH" value="./log" />
+				<entry key="LOGBACK_CONF_FILE" value="./logback.xml" />
+				<entry key="krb5conf" value="/home/bd_qzdzx/krb5.conf" />
+				<entry key="keytab" value="/home/bd_qzdzx/user.keytab" />
+				<entry key="jaasconf" value="/opt/client/HDFS/hadoop/etc/hadoop/jaas.conf" />
+				<entry key="principal" value="bd_qzdzx@HADOOP.COM" />
+				<!-- 
+				开发集群：jdbc:hive2://172.16.1.228:10000/default
+				联调集群：jdbc:hive2://172.32.0.3:24002,172.32.0.2:24002,172.32.0.1:24002/;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2;sasl.qop=auth-conf;auth=KERBEROS;principal=hive/hadoop.hadoop.com@HADOOP.COM
+				生产集群：jdbc:hive2://192.252.102.89:24002,192.252.102.90:24002,192.252.102.139:24002/;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2_2;sasl.qop=auth-conf;auth=KERBEROS;principal=hive2/hadoop.hadoop.com@HADOOP.COM
+				-->
+				<entry key="connString" value="jdbc:hive2://172.16.1.228:10000/default" />
+				<entry key="class" value="org.apache.hive.jdbc.HiveDriver" />
+			</util:map>
+		</property>
+	</bean>
+
+	<bean id="prefixMatchEL" class="com.asiainfo.elexplain.BaseEL">
+		<property name="paramMap">
+			<util:map map-class="java.util.HashMap">
+				<entry key="$FILE" value="" />
+				<entry key="$PREFIX" value="" />
+			</util:map>
+		</property>
+		<property name="stringExpression" value="$FILE.startsWith($PREFIX)" />
+		<property name="returnTypeExpression" value="java.lang.Boolean" />
+	</bean>
+	
+	<bean id="substringEL" class="com.asiainfo.elexplain.BaseEL">
+		<property name="paramMap">
+			<util:map map-class="java.util.HashMap">
+				<entry key="$FILE" value="" />
+			</util:map>
+		</property>
+		<property name="stringExpression" value="$FILE.split('_')[1].substring(0, 6)" />
+		<property name="returnTypeExpression" value="java.lang.String" />
+	</bean>
+	
+	<bean id="pick" class="com.asiainfo.bo.BaseBO" >
+		<property name="name"  value="pick" />
+		<property name="tablePrefix"  value="migu_mg_" />
+		<property name="createSql"  value="CREATE EXTERNAL TABLE IF NOT EXISTS QZD_IMEI_SUBNOLIST_MIRROR_+$FILE.split('_')[1].substring(0, 6)
+				PARTITIONED BY ($SYSDATE.substring(0, 8) string) ROW FORMAT delimited fields terminated by '|' 
+				STORED AS TEXTFILE LOCATION '/tenant/BIGDATA/QZDZX/hpb/QZD_IMEI_SUBNOLIST_MIRROR_+$FILE.split('_')[1].substring(0, 6)'" />
+		<property name="chkDupPath"  value="pick" />
+		<property name="inputPath"  value="/inPickCdr" />
+		<property name="inputFileNamePrefix"  value="MG_" />
+		<property name="inputDsuPath"  value="/pick" />
+		<property name="inputBak"  value="pick" />
+		<property name="outputTmp"  value="pick" />
+		<property name="outputPath"  value="/outPickCdr" />
+		<property name="outputBak"  value="pick" />
+		<property name="partitionMap">
+			<util:map map-class="java.util.HashMap">
+				<entry key="dt" value="1021,1025" />
+				<entry key="dealdate" value="1021,1025" />
+			</util:map>
+		</property>
+	</bean>
+	
+	<bean id="migu" class="com.asiainfo.bo.Migu"  >
+		<property name="name"  value="migu" />
+		<property name="tablePrefix"  value="migu_mg_" />
+		<property name="createSql"  value="CREATE EXTERNAL TABLE IF NOT EXISTS QZD_IMEI_SUBNOLIST_MIRROR_+$FILE.split('_')[1].substring(0, 6)
+				PARTITIONED BY ($SYSDATE.substring(0, 8) string) ROW FORMAT delimited fields terminated by '|' 
+				STORED AS TEXTFILE LOCATION '/tenant/BIGDATA/QZDZX/hpb/QZD_IMEI_SUBNOLIST_MIRROR_+$FILE.split('_')[1].substring(0, 6)'" />
+		<property name="chkDupPath"  value="pick" />
+		<property name="inputPath"  value="/inPickCdr" />
+		<property name="inputFileNamePrefix"  value="MG_" />
+		<property name="inputDsuPath"  value="/pick" />
+		<property name="inputBak"  value="pick" />
+		<property name="outputTmp"  value="pick" />
+		<property name="outputPath"  value="/outPickCdr" />
+		<property name="outputBak"  value="pick" />
+		<property name="partitionMap">
+			<util:map map-class="java.util.HashMap">
+				<entry key="dt" value="1021,1025" />
+				<entry key="dealdate" value="1021,1025" />
+			</util:map>
+		</property>
+	</bean>
+	
+	<bean id="jspick" class="com.asiainfo.bo.JsPick" >
+		<property name="name"  value="jspick" />
+		<property name="tablePrefix"  value="migu_mg_" />
+		<property name="createSql"  value="CREATE EXTERNAL TABLE IF NOT EXISTS QZD_IMEI_SUBNOLIST_MIRROR_+$FILE.split('_')[1].substring(0, 6)
+				PARTITIONED BY ($SYSDATE.substring(0, 8) string) ROW FORMAT delimited fields terminated by '|' 
+				STORED AS TEXTFILE LOCATION '/tenant/BIGDATA/QZDZX/hpb/QZD_IMEI_SUBNOLIST_MIRROR_+$FILE.split('_')[1].substring(0, 6)'" />
+		<property name="chkDupPath"  value="pick" />
+		<property name="inputPath"  value="/inPickCdr" />
+		<property name="inputFileNamePrefix"  value="MG_" />
+		<property name="inputDsuPath"  value="/pick" />
+		<property name="inputBak"  value="pick" />
+		<property name="outputTmp"  value="pick" />
+		<property name="outputPath"  value="/outPickCdr" />
+		<property name="outputBak"  value="pick" />
+		<property name="partitionMap">
+			<util:map map-class="java.util.HashMap">
+				<entry key="dt" value="1021,1025" />
+				<entry key="dealdate" value="1021,1025" />
+			</util:map>
+		</property>
+	</bean>
+	
+</beans>
