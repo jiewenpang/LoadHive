@@ -1,5 +1,6 @@
 package com.asiainfo.bo;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,40 +8,49 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import com.asiainfo.elexplain.BaseEL;
+import com.asiainfo.util.CheckDup;
 
 public class BaseBO extends Thread {
 
 	protected static final Logger logger = LoggerFactory.getLogger(BaseBO.class);
 	protected static FileSystemXmlApplicationContext appContext;
+	protected static Configuration hadoopConfig;
+	protected static FileSystem fileSystem;
 	protected static Connection hiveConnection;
 	protected BaseEL<?> strExplain;
-
+	protected CheckDup checkDup;
+	
 	protected String name;
 	protected String tablePrefix;
-	protected String createSql;
-	protected String chkDupPath;
-	protected String inputPath;
+	protected HashMap<String, String> createSqlMap;
+	protected String chkDupDir;
+	protected String inputDirs;
 	protected String inputFileNamePrefix;
-	protected String inputDsuPath;
-	protected String inputBak;
-	protected String outputTmp;
-	protected String outputPath;
-	protected String outputBak;
+	protected String inputDsuDir;
+	protected String inputBakDir;
+	protected String outputTmpDir;
+	protected String outputDir;
+	protected String outputBakDir;
 	protected HashMap<String, String> partitionMap;
 
+	protected void initProperty() {
+		checkDup = new CheckDup(chkDupDir, name, (chkDupDir!=null && !chkDupDir.equals("")) ? "1" : "0");
+	}
+	
 	public void run() {
-		showProperty();
+		initProperty();
 
 		try {
 			executeDql("desc cdr_01_201601");
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -61,18 +71,14 @@ public class BaseBO extends Thread {
 			logger.info("going to put " + tableName);
 		}
 	}
-
-	protected void showProperty() {
-	}
 	
-	public static void executeDml(String sql) throws SQLException {
+	protected static void executeDml(String sql) throws SQLException {
 		PreparedStatement statement = null;
 		
 		try {
 			statement = BaseBO.hiveConnection.prepareStatement(sql);
 			statement.executeUpdate();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			if (null != statement) {
@@ -107,7 +113,6 @@ public class BaseBO extends Thread {
 				System.out.println();
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			if (null != resultSet) {
@@ -136,28 +141,28 @@ public class BaseBO extends Thread {
 		this.tablePrefix = tablePrefix;
 	}
 
-	public String getCreateSql() {
-		return createSql;
+	public HashMap<String, String> getCreateSqlMap() {
+		return createSqlMap;
 	}
 
-	public void setCreateSql(String createSql) {
-		this.createSql = createSql;
+	public void setCreateSqlMap(HashMap<String, String> createSqlMap) {
+		this.createSqlMap = createSqlMap;
 	}
 
-	public String getChkDupPath() {
-		return chkDupPath;
+	public String getChkDupDir() {
+		return chkDupDir;
 	}
 
-	public void setChkDupPath(String chkDupPath) {
-		this.chkDupPath = chkDupPath;
+	public void setChkDupDir(String chkDupDir) {
+		this.chkDupDir = chkDupDir;
 	}
 
-	public String getInputPath() {
-		return inputPath;
+	public String getInputDirs() {
+		return inputDirs;
 	}
 
-	public void setInputPath(String inputPath) {
-		this.inputPath = inputPath;
+	public void setInputDirs(String inputDirs) {
+		this.inputDirs = inputDirs;
 	}
 
 	public String getInputFileNamePrefix() {
@@ -168,44 +173,44 @@ public class BaseBO extends Thread {
 		this.inputFileNamePrefix = inputFileNamePrefix;
 	}
 
-	public String getInputDsuPath() {
-		return inputDsuPath;
+	public String getInputDsuDir() {
+		return inputDsuDir;
 	}
 
-	public void setInputDsuPath(String inputDsuPath) {
-		this.inputDsuPath = inputDsuPath;
+	public void setInputDsuDir(String inputDsuDir) {
+		this.inputDsuDir = inputDsuDir;
 	}
 
-	public String getInputBak() {
-		return inputBak;
+	public String getInputBakDir() {
+		return inputBakDir;
 	}
 
-	public void setInputBak(String inputBak) {
-		this.inputBak = inputBak;
+	public void setInputBakDir(String inputBakDir) {
+		this.inputBakDir = inputBakDir;
 	}
 
-	public String getOutputTmp() {
-		return outputTmp;
+	public String getOutputTmpDir() {
+		return outputTmpDir;
 	}
 
-	public void setOutputTmp(String outputTmp) {
-		this.outputTmp = outputTmp;
+	public void setOutputTmpDir(String outputTmpDir) {
+		this.outputTmpDir = outputTmpDir;
 	}
 
-	public String getOutputPath() {
-		return outputPath;
+	public String getOutputDir() {
+		return outputDir;
 	}
 
-	public void setOutputPath(String outputPath) {
-		this.outputPath = outputPath;
+	public void setOutputDir(String outputDir) {
+		this.outputDir = outputDir;
 	}
 
-	public String getOutputBak() {
-		return outputBak;
+	public String getOutputBakDir() {
+		return outputBakDir;
 	}
 
-	public void setOutputBak(String outputBak) {
-		this.outputBak = outputBak;
+	public void setOutputBakDir(String outputBakDir) {
+		this.outputBakDir = outputBakDir;
 	}
 
 	public HashMap<String, String> getPartitionMap() {
@@ -222,6 +227,20 @@ public class BaseBO extends Thread {
 
 	public static void setHiveConnection(Connection hiveConnection) {
 		BaseBO.hiveConnection = hiveConnection;
+	}
+
+	public static Configuration getHadoopConfig() {
+		return hadoopConfig;
+	}
+
+	public static void setHadoopConfig(Configuration hadoopConfig) {
+		BaseBO.hadoopConfig = hadoopConfig;
+		try {
+			fileSystem = FileSystem.get(hadoopConfig);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

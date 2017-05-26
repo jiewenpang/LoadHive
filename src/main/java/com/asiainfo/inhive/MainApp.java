@@ -30,6 +30,7 @@ public class MainApp {
 		}
 
 		// 启动每个业务
+		BaseBO.setHadoopConfig(Constant.getHadoopConfig());
 		BaseBO.setHiveConnection(Constant.getHiveConnection());
 		Map<String, BaseBO> beans = BaseBO.getAppContext().getBeansOfType(BaseBO.class);
         for(BaseBO bean : beans.values()) {

@@ -12,7 +12,7 @@ import org.apache.hadoop.security.SecurityUtil;
 import org.apache.hadoop.security.UserGroupInformation;
 
 public class Constant {
-	private static Configuration m_config = new Configuration();
+	private static Configuration hadoopConfig = new Configuration();
 	public static HashMap<String, String> propertyMap;
 	private static Connection hiveConnection;
 
@@ -44,16 +44,16 @@ public class Constant {
 	}
 	
 	private void initHadoop() throws IOException {
-		if ("true".equals(m_config.get("hadoop.security.authorization")) 
-				&& "kerberos".equals(m_config.get("hadoop.security.authentication"))) {
+		if ("true".equals(hadoopConfig.get("hadoop.security.authorization")) 
+				&& "kerberos".equals(hadoopConfig.get("hadoop.security.authentication"))) {
 			
 			System.setProperty("java.security.krb5.conf", propertyMap.get("krb5conf"));
 			System.setProperty("java.security.auth.login.config", propertyMap.get("jaasconf"));
-			m_config.set("username.client.keytab.file", propertyMap.get("keytab"));
-			m_config.set("username.client.kerberos.principal", propertyMap.get("principal"));
+			hadoopConfig.set("username.client.keytab.file", propertyMap.get("keytab"));
+			hadoopConfig.set("username.client.kerberos.principal", propertyMap.get("principal"));
 			
-			UserGroupInformation.setConfiguration(m_config);
-			SecurityUtil.login(m_config, propertyMap.get("krytab"), propertyMap.get("principal"));
+			UserGroupInformation.setConfiguration(hadoopConfig);
+			SecurityUtil.login(hadoopConfig, propertyMap.get("krytab"), propertyMap.get("principal"));
 		} 
 	}
 
@@ -63,6 +63,14 @@ public class Constant {
 	
 	public void setPropertyMap(HashMap<String, String> propertyMap) {
 		Constant.propertyMap = propertyMap;
+	}
+
+	public static Configuration getHadoopConfig() {
+		return hadoopConfig;
+	}
+
+	public static void setHadoopConfig(Configuration hadoopConfig) {
+		Constant.hadoopConfig = hadoopConfig;
 	}
 
 }
