@@ -36,8 +36,8 @@ public class Constant {
 		try {
 			Class.forName(propertyMap.get("class"));
 			hiveConnection = DriverManager.getConnection(propertyMap.get("connString"), "", "");
-		} catch (ClassNotFoundException e1) {
-			e1.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

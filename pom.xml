@@ -28,12 +28,6 @@
 	</build>
 
 	<dependencies>
-		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.18</version>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -52,22 +46,7 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.6.6</version>
 		</dependency>
-		
-		
-		<!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-hdfs -->
-		<dependency>
-			<groupId>org.apache.hadoop</groupId>
-			<artifactId>hadoop-hdfs</artifactId>
-			<version>2.7.2</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-common -->
-		<dependency>
-			<groupId>org.apache.hadoop</groupId>
-			<artifactId>hadoop-common</artifactId>
-			<version>2.7.2</version>
-		</dependency>
-
+	
 		<!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-client -->
 		<dependency>
 			<groupId>org.apache.hadoop</groupId>
@@ -75,19 +54,6 @@
 			<version>2.7.1</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.apache.hbase/hbase -->
-		<dependency>
-			<groupId>org.apache.hbase</groupId>
-			<artifactId>hbase</artifactId>
-			<version>1.1.4</version>
-			<type>pom</type>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.hbase/hbase-client -->
-		<dependency>
-			<groupId>org.apache.hbase</groupId>
-			<artifactId>hbase-client</artifactId>
-			<version>1.1.4</version>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.hive/hive-jdbc -->
 		<dependency>
 			<groupId>org.apache.hive</groupId>

@@ -11,7 +11,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class CheckDup {
+	protected static final Logger logger = LoggerFactory.getLogger(CheckDup.class);
 	private HashMap<String, HashSet<String>> checkMap;
 	private String checkPath;
 	private String progName;
@@ -60,14 +64,14 @@ public class CheckDup {
 			reader.close();
 		} catch (FileNotFoundException e) {
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.warn("", e);
 		} finally {
 			checkMap.put(day, fileSet);
 			if (reader != null) {
 				try {
 					reader.close();
-				} catch (IOException e1) {
-					e1.printStackTrace();
+				} catch (IOException e) {
+					logger.warn("", e);
 				}
 			}
 		}
@@ -96,11 +100,11 @@ public class CheckDup {
 			writer.println(DealDay + "|" + filename);
 			writer.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			logger.warn("", e);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.warn("", e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.warn("", e);
 		}
 		return 0;
 	}

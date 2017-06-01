@@ -18,9 +18,9 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import com.asiainfo.elexplain.BaseEL;
 import com.asiainfo.util.CheckDup;
 
-public class BaseBO extends Thread {
+public abstract class BaseBO extends Thread {
+	protected final static Logger logger = LoggerFactory.getLogger(BaseBO.class);
 
-	protected static final Logger logger = LoggerFactory.getLogger(BaseBO.class);
 	protected static FileSystemXmlApplicationContext appContext;
 	protected static Configuration hadoopConfig;
 	protected static FileSystem fileSystem;
@@ -42,35 +42,10 @@ public class BaseBO extends Thread {
 	protected HashMap<String, String> partitionMap;
 
 	protected void initProperty() {
-		checkDup = new CheckDup(chkDupDir, name, (chkDupDir!=null && !chkDupDir.equals("")) ? "1" : "0");
+		checkDup = new CheckDup(chkDupDir, this.getName(), (chkDupDir!=null && !chkDupDir.equals("")) ? "1" : "0");
 	}
 	
-	public void run() {
-		initProperty();
-
-		try {
-			executeDql("desc cdr_01_201601");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		String[] files = { "mimi_dfadf", "migu_dafdga", "MG_20170404_20170405144606_08.gz" };
-
-		strExplain = (BaseEL<?>) appContext.getBean("prefixMatchEL");
-		for (String file : files) {
-			logger.info("handling file:" + file);
-			strExplain.putParamMapValue("$FILE", file);
-			strExplain.putParamMapValue("$PREFIX", inputFileNamePrefix);
-			if (!(Boolean) strExplain.getResult()) {
-				continue;
-			}
-
-			strExplain = (BaseEL<?>) appContext.getBean("substringEL");
-			strExplain.putParamMapValue("$FILE", file);
-			String tableName = tablePrefix + strExplain.getResult();
-			logger.info("going to put " + tableName);
-		}
-	}
+	public abstract void run();
 	
 	protected static void executeDml(String sql) throws SQLException {
 		PreparedStatement statement = null;
@@ -79,7 +54,7 @@ public class BaseBO extends Thread {
 			statement = BaseBO.hiveConnection.prepareStatement(sql);
 			statement.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.warn("", e);
 		} finally {
 			if (null != statement) {
 				statement.close();
@@ -100,20 +75,22 @@ public class BaseBO extends Thread {
 			// 输出查询的列名到控制台
 			resultMetaData = resultSet.getMetaData();
 			int columnCount = resultMetaData.getColumnCount();
-			for (int i = 1; i <= columnCount; i++) {
-				System.out.print(resultMetaData.getColumnLabel(i) + '\t');
+			StringBuffer tmpBuffer = new StringBuffer();
+			for (int i = columnCount; i >= 1; i--) {
+				tmpBuffer.append(resultMetaData.getColumnLabel(i) + '\t');
 			}
-			System.out.println();
+			logger.info(tmpBuffer.toString());
 
 			// 输出查询结果到控制台
 			while (resultSet.next()) {
-				for (int i = 1; i <= columnCount; i++) {
-					System.out.print(resultSet.getString(i) + '\t');
+				tmpBuffer.setLength(0);
+				for (int i = columnCount; i >= 1; i--) {
+					tmpBuffer.append(resultSet.getString(i) + '\t');
 				}
-				System.out.println();
+				logger.info(tmpBuffer.toString());
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.warn("", e);
 		} finally {
 			if (null != resultSet) {
 				resultSet.close();
@@ -238,8 +215,7 @@ public class BaseBO extends Thread {
 		try {
 			fileSystem = FileSystem.get(hadoopConfig);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.warn("", e);
 		}
 	}
 
