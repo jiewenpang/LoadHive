@@ -17,7 +17,7 @@
 		  ...
 	-->
 	
-	<bean id="property" class="com.asiainfo.inhive.Constant">
+	<bean id="property" class="com.asiainfo.loadhive.Constant">
 		<property name="propertyMap">
 			<util:map map-class="java.util.HashMap">
 				<entry key="LOG_PATH" value="./log" />
@@ -37,7 +37,7 @@
 		</property>
 	</bean>
 
-	<bean id="prefixMatchEL" class="com.asiainfo.elexplain.BaseEL">
+	<bean id="prefixMatchEL" class="com.asiainfo.loadhive.elexplain.BaseEL">
 		<property name="paramMap">
 			<util:map map-class="java.util.HashMap">
 				<entry key="$FILE" value="" />
@@ -48,7 +48,7 @@
 		<property name="returnTypeExpression" value="java.lang.Boolean" />
 	</bean>
 	
-	<bean id="substringEL" class="com.asiainfo.elexplain.BaseEL">
+	<bean id="substringEL" class="com.asiainfo.loadhive.elexplain.BaseEL">
 		<property name="paramMap">
 			<util:map map-class="java.util.HashMap">
 				<entry key="$FILE" value="" />
@@ -58,7 +58,7 @@
 		<property name="returnTypeExpression" value="java.lang.String" />
 	</bean>
 	
-	<bean id="replaceEL" class="com.asiainfo.elexplain.BaseEL">
+	<bean id="replaceEL" class="com.asiainfo.loadhive.elexplain.BaseEL">
 		<property name="paramMap">
 			<util:map map-class="java.util.HashMap">
 				<entry key="$FILE" value="" />
@@ -70,7 +70,7 @@
 		<property name="returnTypeExpression" value="java.lang.String" />
 	</bean>
 	
-	<bean id="pick" class="com.asiainfo.bo.Pick" >
+	<bean id="pick" class="com.asiainfo.loadhive.bo.Pick" >
 		<property name="name"  value="pick" />
 		<property name="tablePrefix"  value="cdr_" />
 		<property name="createSqlMap">
@@ -108,11 +108,11 @@
 		</property>
 	</bean>
 	
-	<bean id="migu" class="com.asiainfo.bo.Migu"  >
+	<bean id="migu" class="com.asiainfo.loadhive.bo.Migu"  >
 		<property name="name"  value="migu" />
 	</bean>
 	
-	<bean id="jspick" class="com.asiainfo.bo.JsPick" >
+	<bean id="jspick" class="com.asiainfo.loadhive.bo.JsPick" >
 		<property name="name"  value="jspick" />
 	</bean>
 	

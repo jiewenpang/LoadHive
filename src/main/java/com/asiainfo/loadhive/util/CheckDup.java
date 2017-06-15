@@ -1,4 +1,4 @@
-package com.asiainfo.util;
+package com.asiainfo.loadhive.util;
 
 import java.util.HashSet;
 import java.util.HashMap;

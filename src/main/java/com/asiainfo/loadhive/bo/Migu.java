@@ -1,8 +1,8 @@
-package com.asiainfo.bo;
+package com.asiainfo.loadhive.bo;
 
 import java.sql.SQLException;
 
-import com.asiainfo.elexplain.BaseEL;
+import com.asiainfo.loadhive.elexplain.BaseEL;
 
 public class Migu extends BaseBO {
 

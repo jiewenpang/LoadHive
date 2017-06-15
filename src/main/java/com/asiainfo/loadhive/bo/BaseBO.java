@@ -1,4 +1,4 @@
-package com.asiainfo.bo;
+package com.asiainfo.loadhive.bo;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import com.asiainfo.elexplain.BaseEL;
-import com.asiainfo.util.CheckDup;
+import com.asiainfo.loadhive.elexplain.BaseEL;
+import com.asiainfo.loadhive.util.CheckDup;
 
 public abstract class BaseBO extends Thread {
 	protected final static Logger logger = LoggerFactory.getLogger(BaseBO.class);

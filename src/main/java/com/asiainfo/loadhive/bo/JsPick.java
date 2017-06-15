@@ -1,4 +1,4 @@
-package com.asiainfo.bo;
+package com.asiainfo.loadhive.bo;
 
 public class JsPick extends BaseBO {
 

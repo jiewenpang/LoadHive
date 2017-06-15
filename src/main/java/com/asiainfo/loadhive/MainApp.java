@@ -1,9 +1,9 @@
-package com.asiainfo.inhive;
+package com.asiainfo.loadhive;
 
 import java.io.IOException;
 import java.util.Map;
 
-import com.asiainfo.bo.BaseBO;
+import com.asiainfo.loadhive.bo.BaseBO;
 
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 

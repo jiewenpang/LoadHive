@@ -1,4 +1,4 @@
-package com.asiainfo.inhive;
+package com.asiainfo.loadhive;
 
 import java.io.File;
 import java.io.IOException;

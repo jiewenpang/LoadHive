@@ -1,4 +1,4 @@
-package com.asiainfo.bo;
+package com.asiainfo.loadhive.bo;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import org.apache.hadoop.fs.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.asiainfo.elexplain.BaseEL;
+import com.asiainfo.loadhive.elexplain.BaseEL;
 
 public class Pick extends BaseBO {
 	private static final Logger logger = LoggerFactory.getLogger(Pick.class);
